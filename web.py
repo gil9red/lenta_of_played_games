@@ -7,12 +7,10 @@ __author__ = 'ipetrash'
 import logging
 import os.path
 from collections import defaultdict
-from decimal import Decimal
-from typing import Optional
 
-from flask import Flask, render_template, render_template_string, send_from_directory
+from flask import Flask, render_template, send_from_directory
 
-from config import DIR, DIR_LOG
+from config import DIR_LOG
 from common import get_logger
 from db import Game, fn
 
@@ -21,12 +19,6 @@ log = get_logger('web', DIR_LOG)
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
-
-
-# def get_float(value: Decimal) -> Optional[float]:
-#     if value is None:
-#         return
-#     return float(value)
 
 
 @app.route("/")
@@ -46,7 +38,6 @@ def index():
             .order_by(fn_year.desc())
     ):
         year_by_number.append([game.year, game.count])
-        # print(game.year, game.count)
 
     last_year = year_by_number[0][0]
 

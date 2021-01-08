@@ -7,9 +7,10 @@ __author__ = 'ipetrash'
 import datetime as DT
 import logging
 import sys
+import time
 
 from pathlib import Path
-from typing import Iterator, Tuple, Optional
+from typing import Iterator, Tuple, Optional, Callable, Any
 
 from config import DIR_LOG
 
@@ -25,6 +26,14 @@ def utc_to_local(utc_dt: DT.datetime) -> Optional[DT.datetime]:
     if not utc_dt:
         return
     return utc_dt.replace(tzinfo=DT.timezone.utc).astimezone(tz=None)
+
+
+def get_finally(f: Callable) -> Any:
+    while True:
+        try:
+            return f()
+        except:
+            time.sleep(1)
 
 
 def get_logger(file_name: str, dir_name='logs'):

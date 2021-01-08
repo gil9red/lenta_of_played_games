@@ -5,22 +5,13 @@ __author__ = 'ipetrash'
 
 
 import time
-from typing import Callable, Any
 
 # pip install github3.py
 from github3 import GitHub
 
 from config import TOKEN
-from common import log, utc_to_local
+from common import log, utc_to_local, get_finally
 from db import GistFile
-
-
-def get_finally(f: Callable) -> Any:
-    while True:
-        try:
-            return f()
-        except:
-            time.sleep(1)
 
 
 gh = GitHub(token=TOKEN)
