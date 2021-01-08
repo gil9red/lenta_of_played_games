@@ -8,11 +8,15 @@ import datetime as DT
 import logging
 import shutil
 
-from typing import Any, Callable, Union, Optional, Iterator
+from collections import defaultdict
+from typing import Any, Callable, Union, Optional, Iterator, List, Tuple, Dict
 from pathlib import Path
 
 # pip install peewee
-from peewee import *
+from peewee import (
+    SqliteDatabase, Model, fn,
+    TextField, ForeignKeyField, DateTimeField, BooleanField
+)
 
 from config import DIR
 from third_party.shorten import shorten
@@ -67,7 +71,7 @@ class GistFile(BaseModel):
     content = TextField()
 
     @property
-    def committed_at_dt(self) -> DT.datetime:
+    def committed_at_dt(self) -> Union[DT.datetime, DateTimeField]:
         if isinstance(self.committed_at, str):
             return DT.datetime.fromisoformat(self.committed_at)
 
@@ -92,14 +96,14 @@ class Game(BaseModel):
         )
 
     @property
-    def append_datetime_dt(self) -> DT.datetime:
+    def append_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
         if isinstance(self.append_datetime, str):
             return DT.datetime.fromisoformat(self.append_datetime)
 
         return self.append_datetime
 
     @property
-    def finish_datetime_dt(self) -> DT.datetime:
+    def finish_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
         if isinstance(self.finish_datetime, str):
             return DT.datetime.fromisoformat(self.finish_datetime)
 
@@ -114,6 +118,37 @@ class Game(BaseModel):
             .where(fn_year == year, cls.finish_datetime.is_null(False), cls.ignored == 0)
             .order_by(cls.finish_datetime.desc())
         )
+
+    @classmethod
+    def get_year_by_number(cls) -> List[Tuple[int, int]]:
+        fn_year = fn.strftime('%Y', cls.finish_datetime).cast('INTEGER')
+
+        year_by_number = []
+        for game in (
+                cls
+                .select(
+                    fn_year.alias('year'),
+                    fn.count(cls.id).alias('count')
+                )
+                .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
+                .group_by(fn_year)
+                .order_by(fn_year.desc())
+        ):
+            year_by_number.append((
+                game.year, game.count
+            ))
+
+        return year_by_number
+
+    @classmethod
+    def get_day_by_games(cls, year: int) -> Dict[str, List['Game']]:
+        day_by_games = defaultdict(list)
+
+        for game in Game.get_all_finished_by_year(year):
+            day = game.finish_datetime_dt.strftime('%d/%m/%Y')
+            day_by_games[day].append(game)
+
+        return day_by_games
 
 
 class Settings(BaseModel):
@@ -155,58 +190,23 @@ db.create_tables([GistFile, Game, Settings])
 
 
 if __name__ == '__main__':
-    fn_year = fn.strftime('%Y', Game.finish_datetime).cast('INTEGER')
-
-    # for game in (
-    #         Game
-    #         .select(
-    #             fn_year.alias('year'),
-    #         ).distinct()
-    #         .where(Game.finish_datetime.is_null(False), Game.ignored == 0)
-    #         .order_by(fn_year.desc())
-    # ):
-    #     print(game.year)
-    #
-    # print()
-
-    # TODO: move to class Game
-    for game in (
-            Game
-            .select(
-                fn_year.alias('year'),
-                fn.count(Game.id).alias('count')
-            )
-            .where(Game.finish_datetime.is_null(False), Game.ignored == 0)
-            .group_by(fn_year)
-            .order_by(fn_year.desc())
-    ):
-        print(game.year, game.count)
+    for year, number in Game.get_year_by_number():
+        print(year, number)
 
     print()
 
-    from collections import defaultdict
-    day_by_games = defaultdict(list)
-
-    for game in Game.get_all_finished_by_year(2021):
-        # print(game.name, game.platform)
-
-        day = game.finish_datetime_dt.strftime('%d/%m')
-        day_by_games[day].append(game)
-
-    print(day_by_games)
-
-    for day, games in day_by_games.items():
-        print(day, len(games))
+    day_by_games = Game.get_day_by_games(2021)
+    for day, games in list(day_by_games.items())[:3]:
+        print(f'{day} ({len(games)}):')
         for game in games:
-            print('   ', game.name, game.platform)
+            print(f'    {game.name} ({game.platform})')
 
-    quit()
+    print()
 
-    for game in Game.select()\
-            .where(Game.finish_datetime.is_null(False), Game.ignored == 0)\
-            .order_by(Game.finish_datetime.desc(), Game.name.asc()):
-        print(game)
-    quit()
+    # for game in Game.select()\
+    #         .where(Game.finish_datetime.is_null(False), Game.ignored == 0)\
+    #         .order_by(Game.finish_datetime.desc(), Game.name.asc()):
+    #     print(game)
 
     for gist_file in GistFile.select().order_by(GistFile.committed_at.asc()).limit(5):
         print(gist_file)
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     for game in Game.select().order_by(Game.id.desc()).limit(5):
         print(game)
 
-    # TODO: Осторожнее, если в данный момент будет запись в базу, произойдет ошибка, т.к.
+    # NOTE: Осторожнее, если в данный момент будет запись в базу, произойдет ошибка, т.к.
     #       база будет залочена
     # import uuid
     # key = uuid.uuid4().hex

@@ -39,6 +39,7 @@
                 <div id="collapse_{{ year }}" class="collapse {{'show' if loop.index == 1 else ''}}" aria-labelledby="heading_{{ year }}" data-parent="#accordion" data-year="{{ year }}">
                     <div class="card-body p-0 {{'loaded-body' if loop.index > 1 else ''}}">
                     {% if loop.index == 1 %}
+                        {# day_by_games будет обработан шаблоном year_by_game.html #}
                         {% include 'year_by_game.html' %}
                     {% else %}
                         <div class="progress">
