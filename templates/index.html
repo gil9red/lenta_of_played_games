@@ -199,6 +199,15 @@
 
             search(true);
         });
+
+        // Change theme-color from darkSwitch
+        $('#darkSwitch').click(function() {
+            if ($(this).is(':checked')){
+                $('meta[name=theme-color]').attr('content', '#333');
+            } else {
+                $('meta[name=theme-color]').attr('content', '#eee');
+            }
+        });
     </script>
     <script src="{{ url_for('static', filename='dark-mode-switch-1.0.0/dark-mode-switch.min.js') }}"></script>
 </body>
