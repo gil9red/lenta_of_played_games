@@ -36,17 +36,39 @@
         img.category {
             margin-right: 0.5rem;
         }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        [data-theme="dark"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
+        {#
         <div class="navbar-brand">
             <img src="{{ url_for('static', filename='img/favicon.png') }}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
             {{ title }}
         </div>
-        <div class="custom-control custom-switch">
+        #}
+        <div class="custom-control custom-switch ml-auto mr-1">
             <input type="checkbox" class="custom-control-input" id="darkSwitch">
-            <label class="custom-control-label" for="darkSwitch">Темный режим</label>
+            <label class="custom-control-label" for="darkSwitch">Ночной режим</label>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_menu" aria-controls="navbar_menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar_menu">
+            <div class="navbar-nav">
+                <button class="btn btn-outline-success mb-1" type="button" onclick="$('.collapse.multi-collapse').collapse('show'); $('#navbar_menu').collapse('hide')">
+                    Развернуть всё
+                </button>
+                <button class="btn btn-outline-info" type="button" onclick="$('.collapse.multi-collapse').collapse('hide'); $('#navbar_menu').collapse('hide')">
+                    Свернуть всё
+                </button>
+            </div>
         </div>
     </nav>
     <div class="container-fluid">
@@ -57,7 +79,7 @@
             </div>
         </div>
 
-        <div class="accordion" id="accordion">
+        <div>
             {% for year, number in year_by_number %}
             <div class="card bg-light">
                 <div class="card-header p-1" id="heading_{{ year }}">
@@ -67,7 +89,7 @@
                         </button>
                     </h5>
                 </div>
-                <div id="collapse_{{ year }}" class="collapse {{'show' if loop.index == 1 else ''}}" aria-labelledby="heading_{{ year }}" data-parent="#accordion" data-year="{{ year }}">
+                <div id="collapse_{{ year }}" class="collapse multi-collapse {{'show' if loop.index == 1 else ''}}" aria-labelledby="heading_{{ year }}" data-year="{{ year }}">
                     <div class="card-body p-0 {{'loaded-body' if loop.index > 1 else ''}}">
                     {% if loop.index == 1 %}
                         {# day_by_games будет обработан шаблоном year_by_game.html #}
@@ -86,7 +108,7 @@
     <script>
         $(function() {
             // Подгрузка данных с сервера при раскрытии
-            $(".collapse").on('show.bs.collapse', function(e) {
+            $(".collapse.multi-collapse").on('show.bs.collapse', function(e) {
                 let collapse_el = $(this);
                 let loaded_body_el = collapse_el.find('.loaded-body');
                 if (loaded_body_el.length == 0) {
