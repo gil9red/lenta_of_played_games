@@ -183,6 +183,14 @@
             }
         }
 
+        function set_theme_color() {
+            if ($('#darkSwitch').is(':checked')){
+                $('meta[name=theme-color]').attr('content', '#333');
+            } else {
+                $('meta[name=theme-color]').attr('content', '#eee');
+            }
+        }
+
         $(function() {
             $('#clear_search').click(function() {
                 $('#search').val('');
@@ -198,15 +206,13 @@
             });
 
             search(true);
-        });
 
-        // Change theme-color from darkSwitch
-        $('#darkSwitch').click(function() {
-            if ($(this).is(':checked')){
-                $('meta[name=theme-color]').attr('content', '#333');
-            } else {
-                $('meta[name=theme-color]').attr('content', '#eee');
-            }
+            set_theme_color();
+
+            // Change theme-color from darkSwitch
+            $('#darkSwitch').click(function() {
+                set_theme_color();
+            });
         });
     </script>
     <script src="{{ url_for('static', filename='dark-mode-switch-1.0.0/dark-mode-switch.min.js') }}"></script>
