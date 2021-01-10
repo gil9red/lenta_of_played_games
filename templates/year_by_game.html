@@ -1,17 +1,17 @@
 {% for day, games in day_by_games.items() %}
 <div class="media border p-1">
     <div class="media-body">
-        <h4>{{ day }}</h4>
+        <h4 class="day">{{ day }}</h4>
         {% for game in games %}
         <div class="media p-1">
             {% if game.category == 'FINISHED_GAME' %}
-            <img src="{{ url_for('static', filename='img/video-game-32x32.png') }}" class="mr-3" alt="video-game">
+            <img src="{{ url_for('static', filename='img/video-game-32x32.png') }}" class="category" alt="video-game">
             {% elif game.category == 'FINISHED_WATCHED' %}
-            <img src="{{ url_for('static', filename='img/television-32x32.png') }}" class="mr-3" alt="television">
+            <img src="{{ url_for('static', filename='img/television-32x32.png') }}" class="category" alt="television">
             {% endif %}
             <div class="media-body">
-                <h5 class="mt-0 mb-1">{{ game.name }} (<div class="font-weight-bolder d-inline-block">{{ game.platform }}</div>)</h5>
-                <div class="font-weight-lighter">{{ game.finish_datetime_dt.time() }}</div>
+                <h5 class="mt-0 mb-0 name">{{ game.name }} (<div class="platform d-inline-block">{{ game.platform }}</div>)</h5>
+                <div class="time">{{ game.finish_datetime_dt.time() }}</div>
             </div>
         </div>
         {% endfor %}
