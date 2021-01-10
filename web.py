@@ -4,9 +4,7 @@
 __author__ = 'ipetrash'
 
 
-import logging
 import os.path
-from collections import defaultdict
 
 from flask import Flask, render_template, send_from_directory
 
@@ -18,7 +16,6 @@ from db import Game
 log = get_logger('web', DIR_LOG)
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 
 @app.route("/")
@@ -52,6 +49,9 @@ def favicon():
 
 if __name__ == '__main__':
     # app.debug = True
+    if app.debug:
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
 
     host = '0.0.0.0'
     port = 10015
