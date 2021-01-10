@@ -3,7 +3,7 @@
     <div class="media-body">
         <h4 class="day">{{ day }}</h4>
         {% for game in games %}
-        <div class="media p-1">
+        <div class="media game p-1">
             {% if game.category == 'FINISHED_GAME' %}
             <img src="{{ url_for('static', filename='img/video-game-32x32.png') }}" class="category" alt="video-game">
             {% elif game.category == 'FINISHED_WATCHED' %}
