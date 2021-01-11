@@ -28,7 +28,7 @@
         .platform {
             font-size: 1.2rem;
             font-weight: bolder;
-            color: #17a2b8; /* .text-info */
+            color: #17a2b8; /* color of .text-info */
         }
         .time {
             font-weight: lighter;
@@ -43,6 +43,10 @@
         }
         [data-theme="dark"] .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .not_found {
+            display: none;
         }
     </style>
 </head>
@@ -140,6 +144,11 @@
                 return;
             }
 
+            // При очистке строки поиска, убираем класс у всех не найденных ранее элементов
+            if (is_empty) {
+                $('.not_found').removeClass('not_found');
+            }
+
             let query = '.media.game';
             if (search_from_id != null) {
                 query = `#${search_from_id} ${query}`;
@@ -155,13 +164,13 @@
 
                 let text = game_el.text().replace(/\s\s+/g, ' ').trim().toLowerCase();
                 let is_visible = text.includes(search_text);
-                game_el.toggle(is_visible);
+                game_el.toggleClass('not_found', !is_visible);
 
                 // Если хоть одна игра видима, то показываем блок ее карточки
                 // Иначе, если уже был поиск и ее карточка была скрыта, то при проверке
-                // видимости игры (:visible) она не будет показана, т.к. ее карточка скрыта
+                // видимости игры она не будет показана, т.к. ее карточка скрыта
                 if (is_visible) {
-                    day_el.toggle(is_visible);
+                    day_el.removeClass('not_found');
                 }
 
                 let day_el_dom = day_el[0];
@@ -175,11 +184,11 @@
             for (let [day_el_dom, games] of day_by_games) {
                 let number_visibles = 0;
                 for (let game_el of games) {
-                    if (game_el.is(":visible")) {
+                    if (!game_el.hasClass("not_found")) {
                         number_visibles++;
                     }
                 }
-                $(day_el_dom).toggle(number_visibles > 0);
+                $(day_el_dom).toggleClass('not_found', number_visibles == 0);
             }
         }
 
