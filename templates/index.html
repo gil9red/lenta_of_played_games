@@ -48,6 +48,13 @@
         .not_found {
             display: none;
         }
+
+        .no_results {
+            color: darkGray;
+        }
+        .hide {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -95,6 +102,7 @@
                     </h5>
                 </div>
                 <div id="collapse_{{ year }}" class="collapse multi-collapse {{'show' if loop.index == 1 else ''}}" aria-labelledby="heading_{{ year }}" data-year="{{ year }}">
+                    <div class="no_results hide text-center">Ничего не найдено</div>
                     <div class="card-body p-0 {{'loaded-body' if loop.index > 1 else ''}}">
                     {% if loop.index == 1 %}
                         {# day_by_games будет обработан шаблоном year_by_game.html #}

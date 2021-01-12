@@ -77,6 +77,21 @@ function search(init=false, search_from_id=null) {
         }
         $(day_el_dom).toggleClass('not_found', number_visibles == 0);
     }
+
+    $('.collapse[data-year]').each(function() {
+        let collapse_el = $(this);
+        let is_all_not_found = true;
+
+        collapse_el.find('.card-body > .media').each(function() {
+            let day_el = $(this);
+            if (!day_el.hasClass('not_found')) {
+                is_all_not_found = false;
+                return false;
+            }
+        });
+
+        collapse_el.find('.no_results').toggleClass('hide', !is_all_not_found);
+    });
 }
 
 function set_theme_color() {
