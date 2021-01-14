@@ -15,6 +15,9 @@
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 
+    <!-- noty -->
+    <script src="static/js/jquery.noty.packaged.min.js"></script>
+
     <style>
         .year {
             font-size: 1.4rem;
@@ -22,7 +25,7 @@
         .day {
             font-size: 1.3rem;
         }
-        .name {
+        .game, .name {
             font-size: 1.15rem;
         }
         .platform {
@@ -55,9 +58,19 @@
         .hide {
             display: none;
         }
+
+        .noselect {
+          -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+             -khtml-user-select: none; /* Konqueror HTML */
+               -moz-user-select: none; /* Old versions of Firefox */
+                -ms-user-select: none; /* Internet Explorer/Edge */
+                    user-select: none; /* Non-prefixed version, currently
+                                          supported by Chrome, Opera and Firefox */
+        }
     </style>
 </head>
-<body>
+<body class="noselect">
     <nav class="navbar">
         {#
         <div class="navbar-brand">

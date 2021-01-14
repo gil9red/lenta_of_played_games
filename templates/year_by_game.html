@@ -9,8 +9,10 @@
             {% elif game.category == 'FINISHED_WATCHED' %}
             <img src="{{ url_for('static', filename='img/television-32x32.png') }}" class="category" alt="television">
             {% endif %}
-            <div class="media-body">
-                <h5 class="mt-0 mb-0 name">{{ game.name }} (<div class="platform d-inline-block">{{ game.platform }}</div>)</h5>
+            <div class="media-body game">
+                <h5 class="mt-0 mb-0">
+                    <div class="name d-inline-block">{{ game.name }}</div> (<div class="platform d-inline-block">{{ game.platform }}</div>)
+                </h5>
                 <div class="time">{{ game.finish_datetime_dt.time() }}</div>
             </div>
         </div>

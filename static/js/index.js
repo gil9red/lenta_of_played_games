@@ -124,4 +124,25 @@ $(function() {
     $('#darkSwitch').click(function() {
         set_theme_color();
     });
+
+    // Copy text by double click
+    $('.media-body.game').dblclick(function() {
+        let text = $(this).find('.name').text();
+console.log($(this), text);
+
+        // SOURCE: https://stackoverflow.com/a/48948114/5909792
+        $("<textarea/>")
+            .appendTo("body")
+            .val(text)
+            .select()
+            .each(() => document.execCommand('copy'))
+            .remove();
+
+        noty({
+            text: 'Скопировано в буфер обмена',
+            type: 'success',
+            layout: 'bottomCenter',
+            timeout: 2000,
+        });
+    });
 });
