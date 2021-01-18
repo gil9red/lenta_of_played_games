@@ -16,6 +16,8 @@ $(function() {
 
                 // Применение поиска на только что подгруженные игры
                 search(true, collapse_el.attr('id'));
+
+                set_copy_handler('.media-body.game', collapse_el);
             }
         );
     })
@@ -94,6 +96,34 @@ function search(init=false, search_from_id=null) {
     });
 }
 
+function set_copy_handler(css_selector, from_element=null) {
+    if (from_element != null) {
+        from_element = from_element.find(css_selector);
+    } else {
+        from_element = $(css_selector);
+    }
+
+    // Copy text by double click
+    from_element.dblclick(function() {
+        let text = $(this).find('.name').text();
+
+        // SOURCE: https://stackoverflow.com/a/48948114/5909792
+        $("<textarea/>")
+            .appendTo("body")
+            .val(text)
+            .select()
+            .each(() => document.execCommand('copy'))
+            .remove();
+
+        noty({
+            text: 'Скопировано в буфер обмена',
+            type: 'success',
+            layout: 'bottomCenter',
+            timeout: 2000,
+        });
+    });
+}
+
 function set_theme_color() {
     if ($('#darkSwitch').is(':checked')){
         $('meta[name=theme-color]').attr('content', '#333');
@@ -125,24 +155,5 @@ $(function() {
         set_theme_color();
     });
 
-    // Copy text by double click
-    $('.media-body.game').dblclick(function() {
-        let text = $(this).find('.name').text();
-console.log($(this), text);
-
-        // SOURCE: https://stackoverflow.com/a/48948114/5909792
-        $("<textarea/>")
-            .appendTo("body")
-            .val(text)
-            .select()
-            .each(() => document.execCommand('copy'))
-            .remove();
-
-        noty({
-            text: 'Скопировано в буфер обмена',
-            type: 'success',
-            layout: 'bottomCenter',
-            timeout: 2000,
-        });
-    });
+    set_copy_handler('.media-body.game');
 });
