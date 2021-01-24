@@ -50,8 +50,9 @@ function search(init=false, search_from_id=null) {
     $(query).each(function() {
         let game_el = $(this);
         let day_el = game_el.parent().parent()
+        let day_value = day_el.find('.day').text();
 
-        let text = game_el.text().replace(/\s\s+/g, ' ').trim().toLowerCase();
+        let text = day_value + game_el.text().replace(/\s\s+/g, ' ').trim().toLowerCase();
         let is_visible = text.includes(search_text);
         game_el.toggleClass('not_found', !is_visible);
 
