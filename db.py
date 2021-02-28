@@ -89,35 +89,59 @@ class Game(BaseModel):
     append_datetime = DateTimeField()
     finish_datetime = DateTimeField(null=True)
     ignored = BooleanField(default=False)
+    root_alias = ForeignKeyField('self', null=True)
 
     class Meta:
         indexes = (
             (("name", "platform", "category"), True),
         )
 
-    @property
-    def append_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
-        if isinstance(self.append_datetime, str):
-            return DT.datetime.fromisoformat(self.append_datetime)
+    def get_first_root(self) -> 'Game':
+        # Идем вверх пока не найдем самую первую игру
+        root_alias = self.root_alias
+        while root_alias:
+            # Если у текущей игры нет псевдонима
+            if not root_alias.root_alias:
+                break
 
-        return self.append_datetime
+            root_alias = root_alias.root_alias
+
+        return root_alias
+
+    def append_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
+        append_datetime = self.append_datetime
+
+        root_alias = self.get_first_root()
+        if root_alias:
+            append_datetime = root_alias.append_datetime
+
+        if isinstance(append_datetime, str):
+            return DT.datetime.fromisoformat(append_datetime)
+
+        return append_datetime
 
     @property
     def finish_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
-        if isinstance(self.finish_datetime, str):
-            return DT.datetime.fromisoformat(self.finish_datetime)
+        finish_datetime = self.finish_datetime
 
-        return self.finish_datetime
+        root_alias = self.get_first_root()
+        if root_alias:
+            finish_datetime = root_alias.finish_datetime
+
+        if isinstance(finish_datetime, str):
+            return DT.datetime.fromisoformat(finish_datetime)
+
+        return finish_datetime
 
     @classmethod
     def get_all_finished_by_year(cls, year: int) -> Iterator['Game']:
-        fn_year = fn.strftime('%Y', cls.finish_datetime).cast('INTEGER')
-        return (
+        query = (
             cls
             .select()
-            .where(fn_year == year, cls.finish_datetime.is_null(False), cls.ignored == 0)
+            .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
             .order_by(cls.finish_datetime.desc())
         )
+        return [game for game in query if game.finish_datetime_dt.year == year]
 
     @classmethod
     def get_year_by_number(cls) -> List[Tuple[int, int]]:
@@ -234,3 +258,14 @@ if __name__ == '__main__':
     #
     # Settings.remove_value(key)
     # assert Settings.get_value(key) is None
+
+    print()
+
+    game = Game.get_by_id(606)
+    print(game.finish_datetime_dt, game.root_alias.finish_datetime_dt)
+
+    # Тут будет такая цепочка:
+    #  * "1468) 'Final Fantasy IX' | PS1 | 2020-06-28 03:53:26+05:00", root_alias=610
+    #  * "610)  'Final Fantasy IX' | PS  | 2016-12-30 07:19:39+05:00", root_alias=15
+    #  * "15)   'Final Fantasy 9'  | PS  | 2015-06-22 22:40:22+05:00", root_alias=null
+    print(Game.get_by_id(1468).finish_datetime_dt)
