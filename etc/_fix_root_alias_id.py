@@ -18,20 +18,27 @@ ARAB_TO_ROMAN = {
 
 # В какой-то момент поменял платформу с PS на PS1, нужно играм с PS1 указать
 # на те же игры с PS
-for game in Game.select().where(Game.platform == 'PS1'):
-    if game.root_alias:
-        continue
+# В другой момент писал 'PS 2', после поменял название категории на PS2
+old_by_new_platforms = {
+    'PS': 'PS1',
+    'PS 2': 'PS2',
+}
+for old_name, new_new in old_by_new_platforms.items():
+    for game in Game.select().where(Game.platform == new_new):
+        if game.root_alias:
+            continue
 
-    root_game = Game.get_or_none(
-        Game.platform == 'PS',
-        Game.name == game.name,
-        Game.category == game.category
-    )
-    if not root_game or root_game.id > game.id:
-        continue
+        root_game = Game.get_or_none(
+            Game.platform == old_name,
+            Game.name == game.name,
+            Game.category == game.category
+        )
+        if not root_game or root_game.id > game.id:
+            continue
 
-    game.root_alias = root_game
-    game.save()
+        print(f'In game #{game.id} setted root_alias from #{root_game.id}')
+        game.root_alias = root_game
+        game.save()
 
 # У некоторых игр арабские цифры в названии были заменены на римские
 for root_game in Game.select():
