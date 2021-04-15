@@ -108,6 +108,7 @@ class Game(BaseModel):
 
         return root_alias
 
+    @property
     def append_datetime_dt(self) -> Union[DT.datetime, DateTimeField]:
         append_datetime = self.append_datetime
 
