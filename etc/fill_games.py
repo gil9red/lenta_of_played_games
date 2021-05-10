@@ -8,7 +8,10 @@ import time
 
 from common import log, iter_parse_played_games
 from db import GistFile, Game, Settings
-from third_party.mini_played_games_parser import parse_played_games, is_finished, is_gamed, is_watched
+from third_party.mini_played_games_parser import (
+    parse_played_games, is_finished, is_gamed, is_watched,
+    FINISHED_GAME, NOT_FINISHED_GAME, FINISHED_WATCHED, NOT_FINISHED_WATCHED,
+)
 
 
 def create_game(log, platform: str, category: str, name: str, gist_file: GistFile) -> bool:
@@ -53,43 +56,58 @@ def main() -> bool:
         platforms = parse_played_games(gist_file.content, silence=True)
 
         for platform, category, name in iter_parse_played_games(platforms):
-            game = Game.get_or_none(name=name, platform=platform)
+            # Пропускаем, если игра уже есть в базе
+            game = Game.get_or_none(name=name, platform=platform, category=category)
+            if game:
+                continue
+
+            # Попробуем найти игру по предыдущей категории с учетом типа
+            need_category = None
+            if category == FINISHED_GAME:
+                need_category = NOT_FINISHED_GAME
+            elif category == FINISHED_WATCHED:
+                need_category = NOT_FINISHED_WATCHED
+
+            if need_category:
+                game = Game.get_or_none(name=name, platform=platform, category=need_category)
+            else:
+                game = Game.get_or_none(name=name, platform=platform)
 
             # Если игра еще не добавлена
             if not game:
                 changed = create_game(log, platform, category, name, gist_file)
+                continue
 
-            else:
-                # Если у игры в базе тип категории отличается от текущего типа категории
-                # Пример: игра была ранее просмотрена, а теперь сыграна
-                if is_gamed(category) != is_gamed(game.category):
-                    changed = create_game(log, platform, category, name, gist_file)
-                    continue
+            # Если у игры в базе тип категории отличается от текущего типа категории
+            # Пример: игра была ранее просмотрена, а теперь сыграна
+            if is_gamed(category) != is_gamed(game.category):
+                changed = create_game(log, platform, category, name, gist_file)
+                continue
 
-                # Если уже завершена, то работа с игрой закончена
+            # Если уже завершена, то работа с игрой закончена
+            if is_finished(game.category):
+                continue
+
+            # Тип категории совпадает
+            is_equals_type_category = (
+                is_gamed(category) == is_gamed(game.category)
+                or
+                is_watched(category) == is_watched(game.category)
+            )
+
+            # Если статус поменялся
+            # Пример: NOT_FINISHED_GAME -> FINISHED_GAME
+            # Но не:  NOT_FINISHED_GAME -> FINISHED_WATCHED
+            if is_equals_type_category and game.category != category:
+                log.info(f'Updated {name!r} ({platform}). {game.category} -> {category}')
+                game.category = category
+
+                # Если игра стала завершенной
                 if is_finished(game.category):
-                    continue
+                    game.finish_datetime = gist_file.committed_at
 
-                # Тип категории совпадает
-                is_equals_type_category = (
-                        is_gamed(category) == is_gamed(game.category)
-                        or
-                        is_watched(category) == is_watched(game.category)
-                )
-
-                # Если статус поменялся
-                # Пример: NOT_FINISHED_GAME -> FINISHED_GAME
-                # Но не:  NOT_FINISHED_GAME -> FINISHED_WATCHED
-                if is_equals_type_category and game.category != category:
-                    log.info(f'Updated {name!r} ({platform}). {game.category} -> {category}')
-                    game.category = category
-
-                    # Если игра стала завершенной
-                    if is_finished(game.category):
-                        game.finish_datetime = gist_file.committed_at
-
-                    game.save()
-                    changed = True
+                game.save()
+                changed = True
 
         Settings.set_value('last_committed_at', last_committed_at)
 
