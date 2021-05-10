@@ -96,6 +96,10 @@ class Game(BaseModel):
             (("name", "platform", "category"), True),
         )
 
+    @classmethod
+    def get_all_by(cls, **filters) -> List['Game']:
+        return list(cls.select().filter(**filters).order_by(cls.id))
+
     def get_first_root(self) -> 'Game':
         # Идем вверх пока не найдем самую первую игру
         root_alias = self.root_alias
