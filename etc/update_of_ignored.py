@@ -30,25 +30,30 @@ def get_games() -> dict:
     return parse_played_games(rs.text, silence=True)
 
 
-current_games = [
-    f'{platform}_{category}_{name}'
-    for platform, category, name in iter_parse_played_games(get_games())
-]
+def main():
+    current_games = [
+        f'{platform}_{category}_{name}'
+        for platform, category, name in iter_parse_played_games(get_games())
+    ]
 
-changed_count = 0
-for game in Game.select():
-    name = f'{game.platform}_{game.category}_{game.name}'
+    changed_count = 0
+    for game in Game.select():
+        name = f'{game.platform}_{game.category}_{game.name}'
 
-    last_ignored = game.ignored
-    game.ignored = name not in current_games
+        last_ignored = game.ignored
+        game.ignored = name not in current_games
 
-    if last_ignored != game.ignored:
-        log.info(f'#{game.id} {game.name} ({game.platform}, {game.category}): {last_ignored} -> {game.ignored}')
-        game.save()
+        if last_ignored != game.ignored:
+            log.info(f'#{game.id} {game.name} ({game.platform}, {game.category}): {last_ignored} -> {game.ignored}')
+            game.save()
 
-        changed_count += 1
+            changed_count += 1
 
-if changed_count:
-    text = f'Изменений: {changed_count}'
-    log.debug(text)
-    send_sms(SMS_API_ID, SMS_TO, '[Lenta of played games] ' + text, log)
+    if changed_count:
+        text = f'Изменений: {changed_count}'
+        log.debug(text)
+        send_sms(SMS_API_ID, SMS_TO, '[Lenta of played games] ' + text, log)
+
+
+if __name__ == '__main__':
+    main()
