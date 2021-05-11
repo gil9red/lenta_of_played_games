@@ -33,7 +33,8 @@ current_games = [
 
 for game in Game.select():
     name = f'{game.platform}_{game.category}_{game.name}'
-    # print(f'{str(name in current_games):>5}. {name}')
+    if not game.ignored and name not in current_games:
+        print(f'{game.name} ({game.platform}, {game.category})')
 
-    game.ignored = name not in current_games
-    game.save()
+        # game.ignored = True
+        # game.save()
