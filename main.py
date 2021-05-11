@@ -4,7 +4,7 @@
 __author__ = 'ipetrash'
 
 
-from etc import fill_games, fill_gist_history
+from etc import fill_games, fill_gist_history, update_of_ignored
 
 from common import log
 from db import db_create_backup
@@ -18,6 +18,8 @@ while True:
     changed_2 = fill_games.main()
     if changed_1 or changed_2:
         db_create_backup(log)
+
+    update_of_ignored.main()
 
     log.info('Finished!')
 
