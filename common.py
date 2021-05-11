@@ -23,9 +23,8 @@ def iter_parse_played_games(platforms: dict) -> Iterator[Tuple[str, str, str]]:
 
 
 def utc_to_local(utc_dt: DT.datetime) -> Optional[DT.datetime]:
-    if not utc_dt:
-        return
-    return utc_dt.replace(tzinfo=DT.timezone.utc).astimezone(tz=None)
+    if utc_dt:
+        return utc_dt.replace(tzinfo=DT.timezone.utc).astimezone(tz=None)
 
 
 def get_finally(f: Callable) -> Any:
