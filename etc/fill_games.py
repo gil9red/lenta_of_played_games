@@ -101,6 +101,7 @@ def main() -> bool:
             if is_equals_type_category and game.category != category:
                 log.info(f'Updated {name!r} ({platform}). {game.category} -> {category}')
                 game.category = category
+                game.ignored = False  # На всякий случай
 
                 # Если игра стала завершенной
                 if is_finished(game.category):
