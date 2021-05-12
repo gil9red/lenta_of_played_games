@@ -22,17 +22,18 @@ ARAB_TO_ROMAN = {
 old_by_new_platforms = {
     'PS': 'PS1',
     'PS 2': 'PS2',
+    'PS 3': 'PS3',
+    'PS 4': 'PS4',
 }
-for old_name, new_new in old_by_new_platforms.items():
-    for game in Game.select().where(Game.platform == new_new):
-        if game.root_alias:
-            continue
-
+for old_platform, new_platform in old_by_new_platforms.items():
+    # Ищем игры с указанной платформой и без заданного root_alias
+    for game in Game.select().where(Game.platform == new_platform, Game.root_alias.is_null()):
         root_game = Game.get_or_none(
-            Game.platform == old_name,
+            Game.platform == old_platform,
             Game.name == game.name,
             Game.category == game.category
         )
+        # Если не найдено или если у найденной id больше, чем у требуемой игры
         if not root_game or root_game.id > game.id:
             continue
 
