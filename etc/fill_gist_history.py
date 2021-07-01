@@ -9,12 +9,12 @@ import time
 # pip install github3.py
 from github3 import GitHub
 
-from config import TOKEN
+from config import GITHUB_TOKEN
 from common import log, utc_to_local, get_finally
 from db import GistFile
 
 
-gh = GitHub(token=TOKEN)
+gh = GitHub(token=GITHUB_TOKEN)
 
 
 def main() -> bool:

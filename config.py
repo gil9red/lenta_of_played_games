@@ -11,11 +11,5 @@ from pathlib import Path
 DIR = Path(__file__).resolve().parent
 DIR_LOG = DIR / 'logs'
 
-TOKEN_FILE_NAME = DIR / 'TOKEN.txt'
-TOKEN = os.environ.get('TOKEN') or TOKEN_FILE_NAME.read_text('utf-8').strip()
-
-SMS_TOKEN_FILE_NAME = DIR / 'SMS_TOKEN.txt'
-SMS_TOKEN = os.environ.get('SMS_TOKEN') or SMS_TOKEN_FILE_NAME.read_text('utf-8').strip()
-
-# <API_ID>:<PHONE>
-SMS_API_ID, SMS_TO = SMS_TOKEN.split(':')
+GITHUB_TOKEN_FILE_NAME = DIR / 'GITHUB_TOKEN.txt'
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN') or GITHUB_TOKEN_FILE_NAME.read_text('utf-8').strip()

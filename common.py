@@ -37,13 +37,13 @@ def get_finally(f: Callable) -> Any:
             time.sleep(1)
 
 
-def get_logger(file_name: str, dir_name='logs'):
+def get_logger(name: str, dir_name='logs'):
     dir_name = Path(dir_name).resolve()
     dir_name.mkdir(parents=True, exist_ok=True)
 
-    file_name = str(dir_name / Path(file_name).resolve().name) + '.log'
+    file_name = str(dir_name / Path(name).resolve().name) + '.log'
 
-    log = logging.getLogger(file_name)
+    log = logging.getLogger(name)
     log.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter('[%(asctime)s] %(filename)s[LINE:%(lineno)d] %(levelname)-8s %(message)s')
@@ -64,40 +64,3 @@ def get_logger(file_name: str, dir_name='logs'):
 
 
 log = get_logger('log', DIR_LOG)
-
-
-# SOURCE: https://github.com/gil9red/SimplePyScripts/blob/a0f9ea209daac9819264d72b773f6f69a28f56b0/Check%20with%20notification/all_common.py#L57
-def send_sms(api_id: str, to: str, text: str, log):
-    api_id = api_id.strip()
-    to = to.strip()
-
-    if not api_id or not to:
-        log.warning('Параметры api_id или to не указаны, отправка СМС невозможна!')
-        return
-
-    log.info(f'Отправка sms: {text!r}')
-
-    if len(text) > 70:
-        text = text[:70-3] + '...'
-        log.info(f'Текст sms будет сокращено, т.к. слишком длинное (больше 70 символов): {text!r}')
-
-    # Отправляю смс на номер
-    url = 'https://sms.ru/sms/send?api_id={api_id}&to={to}&text={text}'.format(
-        api_id=api_id,
-        to=to,
-        text=text
-    )
-    log.debug(repr(url))
-
-    while True:
-        try:
-            rs = requests.get(url)
-            log.debug(repr(rs.text))
-            break
-
-        except:
-            log.exception("При отправке sms произошла ошибка:")
-            log.debug('Через 5 минут попробую снова...')
-
-            # Wait 5 minutes before next attempt
-            time.sleep(5 * 60)

@@ -9,13 +9,14 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
-from config import DIR_LOG, SMS_API_ID, SMS_TO
-from common import iter_parse_played_games, get_logger, send_sms
+from config import DIR_LOG
+from common import iter_parse_played_games, get_logger
 from db import Game
 from third_party.mini_played_games_parser import parse_played_games
+from third_party.add_notify_telegram import add_notify
 
 
-log = get_logger('update_of_ignored', DIR_LOG)
+log = get_logger('[Lenta of played games] update_of_ignored', DIR_LOG)
 
 
 def get_games() -> dict:
@@ -52,7 +53,7 @@ def main():
     if changed_count:
         text = f'Изменений: {changed_count}'
         log.debug(text)
-        send_sms(SMS_API_ID, SMS_TO, '[Lenta of played games] ' + text, log)
+        add_notify(log.name, text)
 
 
 if __name__ == '__main__':
