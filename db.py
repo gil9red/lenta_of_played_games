@@ -117,7 +117,7 @@ class Game(BaseModel):
         append_datetime = self.append_datetime
 
         root_alias = self.get_first_root()
-        if root_alias:
+        if root_alias and root_alias.append_datetime is not None:
             append_datetime = root_alias.append_datetime
 
         if isinstance(append_datetime, str):
@@ -130,7 +130,7 @@ class Game(BaseModel):
         finish_datetime = self.finish_datetime
 
         root_alias = self.get_first_root()
-        if root_alias:
+        if root_alias and root_alias.finish_datetime is not None:
             finish_datetime = root_alias.finish_datetime
 
         if isinstance(finish_datetime, str):
