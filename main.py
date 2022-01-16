@@ -23,4 +23,4 @@ while True:
 
     log.info('Finished!')
 
-    wait(days=1)
+    wait(hours=1)
