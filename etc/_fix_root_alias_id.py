@@ -63,5 +63,6 @@ for root_game in Game.select():
         if game.root_alias or root_game.id > game.id:
             continue
 
+        print(f'In game #{game.id} setted root_alias from #{root_game.id}')
         game.root_alias = root_game
         game.save()
