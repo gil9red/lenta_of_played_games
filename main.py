@@ -12,15 +12,20 @@ from third_party.wait import wait
 
 
 while True:
-    log.info('Started!')
+    try:
+        log.info('Started!')
 
-    changed_1 = fill_gist_history.main()
-    changed_2 = fill_games.main()
-    if changed_1 or changed_2:
-        db_create_backup(log)
+        changed_1 = fill_gist_history.main()
+        changed_2 = fill_games.main()
+        if changed_1 or changed_2:
+            db_create_backup(log)
 
-    update_of_ignored.main()
+        update_of_ignored.main()
+
+    except Exception:
+        log.exception('Error:')
+        wait(minutes=15)
+        continue
 
     log.info('Finished!')
-
     wait(hours=1)
