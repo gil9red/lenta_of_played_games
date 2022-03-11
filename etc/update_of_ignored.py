@@ -53,7 +53,7 @@ def main():
     if changed_count:
         text = f'Изменений: {changed_count}'
         log.debug(text)
-        add_notify(log.name, text)
+        add_notify(log.name, text, has_delete_button=True)
 
 
 if __name__ == '__main__':
