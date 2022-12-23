@@ -144,9 +144,11 @@ class Game(BaseModel):
             cls
             .select()
             .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
-            .order_by(cls.finish_datetime.desc())
         )
-        return [game for game in query if game.finish_datetime_dt.year == year]
+        # Проще отсортировать тут, чем в базе из-за особенностей finish_datetime_dt
+        items = [game for game in query if game.finish_datetime_dt.year == year]
+        items.sort(key=lambda item: item.finish_datetime_dt, reverse=True)
+        return items
 
     @classmethod
     def get_year_by_number(cls) -> List[Tuple[int, int]]:
