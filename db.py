@@ -14,7 +14,7 @@ from pathlib import Path
 
 # pip install peewee
 from peewee import (
-    SqliteDatabase, Model, fn,
+    SqliteDatabase, Model, fn, Query,
     TextField, ForeignKeyField, DateTimeField, BooleanField
 )
 
@@ -139,12 +139,20 @@ class Game(BaseModel):
         return finish_datetime
 
     @classmethod
+    def get_query_for_current_finished(cls) -> Query:
+        return cls.select().where(cls.finish_datetime.is_null(False), cls.ignored == 0)
+
+    @classmethod
+    def get_all_finished(cls, sort: bool = True) -> Iterator['Game']:
+        query = cls.get_query_for_current_finished()
+        items = list(query)
+        if sort:
+            items.sort(key=lambda item: item.finish_datetime_dt, reverse=True)
+        return items
+
+    @classmethod
     def get_all_finished_by_year(cls, year: int) -> Iterator['Game']:
-        query = (
-            cls
-            .select()
-            .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
-        )
+        query = cls.get_query_for_current_finished()
         # Проще отсортировать тут, чем в базе из-за особенностей finish_datetime_dt
         items = [game for game in query if game.finish_datetime_dt.year == year]
         items.sort(key=lambda item: item.finish_datetime_dt, reverse=True)
@@ -276,3 +284,4 @@ if __name__ == '__main__':
     #  * "610)  'Final Fantasy IX' | PS  | 2016-12-30 07:19:39+05:00", root_alias=15
     #  * "15)   'Final Fantasy 9'  | PS  | 2015-06-22 22:40:22+05:00", root_alias=null
     print(Game.get_by_id(1468).finish_datetime_dt)
+    print()

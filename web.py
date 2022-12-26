@@ -6,7 +6,7 @@ __author__ = 'ipetrash'
 
 import os.path
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, jsonify
 
 from config import DIR_LOG
 from common import get_logger
@@ -37,6 +37,20 @@ def year(year: int):
         "year_by_game.html",
         day_by_games=Game.get_day_by_games(year),
     )
+
+
+@app.route('/api/get_all_finished')
+def api_get_all_finished():
+    return jsonify([
+        dict(
+            name=game.name,
+            platform=game.platform,
+            category=game.category,
+            append_datetime=game.append_datetime_dt.isoformat() if game.append_datetime_dt else None,
+            finish_datetime=game.finish_datetime_dt.isoformat() if game.finish_datetime_dt else None,
+        )
+        for game in Game.get_all_finished()
+    ])
 
 
 @app.route('/favicon.ico')
