@@ -108,8 +108,10 @@ crashlytics-build.properties
 # Created by .ignore support plugin (hsz.mobi)
 
 # For the current project
-TOKEN.txt
-SMS_TOKEN.txt
-database.sqlite
 backup/
 logs/
+TOKEN.txt
+GITHUB_TOKEN.txt
+SMS_TOKEN.txt
+database.sqlite
+users.json

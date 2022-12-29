@@ -5,10 +5,13 @@ __author__ = 'ipetrash'
 
 
 import os.path
+from typing import Optional
 
 from flask import Flask, render_template, send_from_directory, jsonify
 
-from config import DIR_LOG
+from flask_httpauth import HTTPDigestAuth
+
+from config import DIR_LOG, users
 from common import get_logger
 from db import Game
 
@@ -16,9 +19,18 @@ from db import Game
 log = get_logger('web', DIR_LOG)
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '<SECRET_KEY_HERE>'
+
+auth = HTTPDigestAuth()
+
+
+@auth.get_password
+def get_password(username: str) -> Optional[str]:
+    return users.get(username)
 
 
 @app.route("/")
+@auth.login_required
 def index():
     year_by_number = Game.get_year_by_number()
     last_year = year_by_number[0][0]
