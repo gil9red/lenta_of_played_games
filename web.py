@@ -5,7 +5,6 @@ __author__ = 'ipetrash'
 
 
 import os.path
-from typing import Optional
 
 from flask import Flask, render_template, send_from_directory, jsonify
 
@@ -25,7 +24,7 @@ auth = HTTPDigestAuth()
 
 
 @auth.get_password
-def get_password(username: str) -> Optional[str]:
+def get_password(username: str) -> str | None:
     return users.get(username)
 
 

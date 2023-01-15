@@ -9,7 +9,7 @@ import logging
 import shutil
 
 from collections import defaultdict
-from typing import Any, Callable, Union, Optional, Iterator, List, Tuple, Dict
+from typing import Any, Callable, Union, Optional, Iterator
 from pathlib import Path
 
 # pip install peewee
@@ -97,7 +97,7 @@ class Game(BaseModel):
         )
 
     @classmethod
-    def get_all_by(cls, **filters) -> List['Game']:
+    def get_all_by(cls, **filters) -> list['Game']:
         return list(cls.select().filter(**filters).order_by(cls.id))
 
     def get_first_root(self) -> 'Game':
@@ -159,7 +159,7 @@ class Game(BaseModel):
         return items
 
     @classmethod
-    def get_year_by_number(cls) -> List[Tuple[int, int]]:
+    def get_year_by_number(cls) -> list[tuple[int, int]]:
         fn_year = fn.strftime('%Y', cls.finish_datetime).cast('INTEGER')
 
         year_by_number = []
@@ -180,7 +180,7 @@ class Game(BaseModel):
         return year_by_number
 
     @classmethod
-    def get_day_by_games(cls, year: int) -> Dict[str, List['Game']]:
+    def get_day_by_games(cls, year: int) -> dict[str, list['Game']]:
         day_by_games = defaultdict(list)
 
         for game in Game.get_all_finished_by_year(year):
