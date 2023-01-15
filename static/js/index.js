@@ -125,14 +125,6 @@ function set_copy_handler(css_selector, from_element=null) {
     });
 }
 
-function set_theme_color() {
-    if ($('#darkSwitch').is(':checked')){
-        $('meta[name=theme-color]').attr('content', '#333');
-    } else {
-        $('meta[name=theme-color]').attr('content', '#eee');
-    }
-}
-
 $(function() {
     $('#clear_search').click(function() {
         $('#search').val('');
@@ -148,13 +140,6 @@ $(function() {
     });
 
     search(true);
-
-    set_theme_color();
-
-    // Change theme-color from darkSwitch
-    $('#darkSwitch').click(function() {
-        set_theme_color();
-    });
 
     set_copy_handler('.media-body.game');
 });

@@ -3,7 +3,7 @@
 <head>
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#eee" />
+    <meta name="theme-color" content="#333" />
     <title>{{ title }}</title>
 
     <script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
@@ -11,7 +11,7 @@
     <script src="{{ url_for('static', filename='bootstrap-4.5.3/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-4.5.3/bootstrap.min.css') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='dark-mode-switch-1.0.0/dark-mode.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-dark.min_3.0.0.css') }}" />
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 
@@ -42,14 +42,15 @@
         }
 
         .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-        [data-theme="dark"] .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
-
         .not_found {
             display: none;
+        }
+
+        img.category {
+            width: 32px;
+            height: 32px;
         }
 
         .no_results {
@@ -72,17 +73,11 @@
 </head>
 <body class="noselect">
     <nav class="navbar">
-        {#
         <div class="navbar-brand">
             <img src="{{ url_for('static', filename='img/favicon.png') }}" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
             {{ title }}
         </div>
-        #}
-        <div class="custom-control custom-switch ml-auto mr-1">
-            <input type="checkbox" class="custom-control-input" id="darkSwitch">
-            <label class="custom-control-label" for="darkSwitch">Ночной режим</label>
-        </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_menu" aria-controls="navbar_menu" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler pr-0" type="button" data-toggle="collapse" data-target="#navbar_menu" aria-controls="navbar_menu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbar_menu">
@@ -98,7 +93,7 @@
     </nav>
     <div class="container-fluid">
         <div class="input-group mb-2">
-            <input type="text" class="form-control bg-light" id="search" placeholder="Введите для поиска..." aria-describedby="basic-addon2">
+            <input type="text" class="form-control" id="search" placeholder="Введите для поиска..." aria-describedby="basic-addon2">
             <div class="input-group-append">
                 <button class="btn btn-outline-danger" id="clear_search" type="button">Очистить</button>
             </div>
@@ -106,7 +101,7 @@
 
         <div>
             {% for year, number in year_by_number %}
-            <div class="card bg-light">
+            <div class="card">
                 <div class="card-header p-1" id="heading_{{ year }}">
                     <h5 class="mb-0">
                         <button class="btn btn-link w-100 p-0" type="button" data-toggle="collapse" data-target="#collapse_{{ year }}" aria-expanded="true" aria-controls="collapse_{{ year }}">
@@ -132,6 +127,5 @@
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-    <script src="{{ url_for('static', filename='dark-mode-switch-1.0.0/dark-mode-switch.min.js') }}"></script>
 </body>
 </html>

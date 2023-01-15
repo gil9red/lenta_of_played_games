@@ -1,4 +1,4 @@
 SOURCE:
  
-* https://favicon.io/emoji-favicons/video-game/
-* https://favicon.io/emoji-favicons/television/
+* https://emojipedia.org/facebook/14.0/video-game/
+* https://emojipedia.org/facebook/14.0/television/

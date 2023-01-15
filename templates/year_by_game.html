@@ -5,9 +5,9 @@
         {% for game in games %}
         <div class="media game p-1">
             {% if game.category == 'FINISHED_GAME' %}
-            <img src="{{ url_for('static', filename='img/video-game-32x32.png') }}" class="category" alt="video-game">
+            <img src="{{ url_for('static', filename='img/video-game.png') }}" class="category" alt="video-game">
             {% elif game.category == 'FINISHED_WATCHED' %}
-            <img src="{{ url_for('static', filename='img/television-32x32.png') }}" class="category" alt="television">
+            <img src="{{ url_for('static', filename='img/television.png') }}" class="category" alt="television">
             {% endif %}
             <div class="media-body game">
                 <h5 class="mt-0 mb-0">
