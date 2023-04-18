@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'ipetrash'
+__author__ = "ipetrash"
 
 
 from etc import fill_games, fill_gist_history, update_of_ignored
@@ -13,7 +13,7 @@ from third_party.wait import wait
 
 while True:
     try:
-        log.info('Started!')
+        log.info("Started!")
 
         changed_1 = fill_gist_history.main()
         changed_2 = fill_games.main()
@@ -23,9 +23,9 @@ while True:
         update_of_ignored.main()
 
     except Exception:
-        log.exception('Error:')
+        log.exception("Error:")
         wait(minutes=15)
         continue
 
-    log.info('Finished!')
+    log.info("Finished!")
     wait(hours=1)

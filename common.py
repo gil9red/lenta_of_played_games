@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'ipetrash'
+__author__ = "ipetrash"
 
 
 import datetime as DT
@@ -37,18 +37,20 @@ def get_finally(f: Callable) -> Any:
             time.sleep(1)
 
 
-def get_logger(name: str, dir_name='logs'):
+def get_logger(name: str, dir_name="logs"):
     dir_name = Path(dir_name).resolve()
     dir_name.mkdir(parents=True, exist_ok=True)
 
-    file_name = str(dir_name / Path(name).resolve().name) + '.log'
+    file_name = str(dir_name / Path(name).resolve().name) + ".log"
 
     log = logging.getLogger(name)
     log.setLevel(logging.DEBUG)
 
-    formatter = logging.Formatter('[%(asctime)s] %(filename)s[LINE:%(lineno)d] %(levelname)-8s %(message)s')
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(filename)s[LINE:%(lineno)d] %(levelname)-8s %(message)s"
+    )
 
-    fh = logging.FileHandler(file_name, encoding='utf-8')
+    fh = logging.FileHandler(file_name, encoding="utf-8")
     fh.setLevel(logging.DEBUG)
 
     ch = logging.StreamHandler(stream=sys.stdout)
@@ -63,4 +65,4 @@ def get_logger(name: str, dir_name='logs'):
     return log
 
 
-log = get_logger('log', DIR_LOG)
+log = get_logger("log", DIR_LOG)
