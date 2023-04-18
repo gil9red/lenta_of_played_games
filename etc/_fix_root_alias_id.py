@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'ipetrash'
+__author__ = "ipetrash"
 
 
 import re
@@ -10,9 +10,21 @@ from db import Game
 
 # Некоторым играм менял номер с арабских на римские, типа: "Final Fantasy 5" -> "Final Fantasy V"
 ARAB_TO_ROMAN = {
-    '1': 'I', '2': 'II', '3': 'III', '4': 'IV', '5': 'V', '6': 'VI',
-    '7': 'VII', '8': 'VIII', '9': 'IX', '10': 'X', '11': 'XI', '12': 'XII',
-    '13': 'XIII', '14': 'XIV', '15': 'XV',
+    "1": "I",
+    "2": "II",
+    "3": "III",
+    "4": "IV",
+    "5": "V",
+    "6": "VI",
+    "7": "VII",
+    "8": "VIII",
+    "9": "IX",
+    "10": "X",
+    "11": "XI",
+    "12": "XII",
+    "13": "XIII",
+    "14": "XIV",
+    "15": "XV",
 }
 
 
@@ -20,31 +32,33 @@ ARAB_TO_ROMAN = {
 # на те же игры с PS
 # В другой момент писал 'PS 2', после поменял название категории на PS2
 old_by_new_platforms = {
-    'PS': 'PS1',
-    'PS 2': 'PS2',
-    'PS 3': 'PS3',
-    'PS 4': 'PS4',
-    'Dendy/NES/Famicom': 'NES',
+    "PS": "PS1",
+    "PS 2": "PS2",
+    "PS 3": "PS3",
+    "PS 4": "PS4",
+    "Dendy/NES/Famicom": "NES",
 }
 for old_platform, new_platform in old_by_new_platforms.items():
     # Ищем игры с указанной платформой и без заданного root_alias
-    for game in Game.select().where(Game.platform == new_platform, Game.root_alias.is_null()):
+    for game in Game.select().where(
+        Game.platform == new_platform, Game.root_alias.is_null()
+    ):
         root_game = Game.get_or_none(
             Game.platform == old_platform,
             Game.name == game.name,
-            Game.category == game.category
+            Game.category == game.category,
         )
         # Если не найдено или если у найденной id больше, чем у требуемой игры
         if not root_game or root_game.id > game.id:
             continue
 
-        print(f'In game #{game.id} setted root_alias from #{root_game.id}')
+        print(f"In game #{game.id} setted root_alias from #{root_game.id}")
         game.root_alias = root_game
         game.save()
 
 # У некоторых игр арабские цифры в названии были заменены на римские
 for root_game in Game.select():
-    m = re.search(r'\d+', root_game.name)
+    m = re.search(r"\d+", root_game.name)
     if not m:
         continue
 
@@ -53,17 +67,17 @@ for root_game in Game.select():
         continue
 
     roman = ARAB_TO_ROMAN[number]
-    new_game_name = re.sub(r'\d+', roman, root_game.name)
+    new_game_name = re.sub(r"\d+", roman, root_game.name)
 
     for game in Game.select().where(
-            Game.name == new_game_name,
-            Game.platform == root_game.platform,
-            Game.category == root_game.category
+        Game.name == new_game_name,
+        Game.platform == root_game.platform,
+        Game.category == root_game.category,
     ):
         # Если уже задан root_alias или у родительской игры id меньше текущей
         if game.root_alias or root_game.id > game.id:
             continue
 
-        print(f'In game #{game.id} setted root_alias from #{root_game.id}')
+        print(f"In game #{game.id} setted root_alias from #{root_game.id}")
         game.root_alias = root_game
         game.save()

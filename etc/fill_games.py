@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'ipetrash'
+__author__ = "ipetrash"
 
 
 import time
@@ -9,12 +9,24 @@ import time
 from common import log, iter_parse_played_games
 from db import GistFile, Game, Settings
 from third_party.mini_played_games_parser import (
-    parse_played_games, is_finished, is_gamed, is_watched,
-    FINISHED_GAME, NOT_FINISHED_GAME, FINISHED_WATCHED, NOT_FINISHED_WATCHED,
+    parse_played_games,
+    is_finished,
+    is_gamed,
+    is_watched,
+    FINISHED_GAME,
+    NOT_FINISHED_GAME,
+    FINISHED_WATCHED,
+    NOT_FINISHED_WATCHED,
 )
 
 
-def create_game(log, platform: str, category: str, name: str, gist_file: GistFile) -> bool:
+def create_game(
+    log,
+    platform: str,
+    category: str,
+    name: str,
+    gist_file: GistFile,
+) -> bool:
     # Проверяем, что игры с такой категорией нет в базе
     game = Game.get_or_none(name=name, platform=platform, category=category)
     if game:
@@ -26,7 +38,7 @@ def create_game(log, platform: str, category: str, name: str, gist_file: GistFil
     if is_finished(category):
         finish_datetime = gist_file.committed_at
 
-    log.info(f'Added {name!r} ({platform} / {category})')
+    log.info(f"Added {name!r} ({platform} / {category})")
     Game.create(
         name=name,
         platform=platform,
@@ -42,8 +54,8 @@ def main() -> bool:
     changed = False
     t = time.perf_counter()
 
-    last_committed_at = Settings.get_value('last_committed_at')
-    log.info(f'Last committed at: {last_committed_at}')
+    last_committed_at = Settings.get_value("last_committed_at")
+    log.info(f"Last committed at: {last_committed_at}")
 
     query = GistFile.select().order_by(GistFile.committed_at.asc())
     if last_committed_at:
@@ -69,7 +81,9 @@ def main() -> bool:
                 need_category = NOT_FINISHED_WATCHED
 
             if need_category:
-                game = Game.get_or_none(name=name, platform=platform, category=need_category)
+                game = Game.get_or_none(
+                    name=name, platform=platform, category=need_category
+                )
             else:
                 game = Game.get_or_none(name=name, platform=platform)
 
@@ -99,7 +113,9 @@ def main() -> bool:
             # Пример: NOT_FINISHED_GAME -> FINISHED_GAME
             # Но не:  NOT_FINISHED_GAME -> FINISHED_WATCHED
             if is_equals_type_category and game.category != category:
-                log.info(f'Updated {name!r} ({platform}). {game.category} -> {category}')
+                log.info(
+                    f"Updated {name!r} ({platform}). {game.category} -> {category}"
+                )
                 game.category = category
                 game.ignored = False  # На всякий случай
 
@@ -110,11 +126,11 @@ def main() -> bool:
                 game.save()
                 changed = True
 
-        Settings.set_value('last_committed_at', last_committed_at)
+        Settings.set_value("last_committed_at", last_committed_at)
 
-    log.info(f'Elapsed {int(time.perf_counter() - t)} secs')
+    log.info(f"Elapsed {int(time.perf_counter() - t)} secs")
     return changed
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
