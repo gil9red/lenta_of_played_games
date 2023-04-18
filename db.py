@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'ipetrash'
+__author__ = "ipetrash"
 
 
 import datetime as DT
@@ -14,31 +14,37 @@ from pathlib import Path
 
 # pip install peewee
 from peewee import (
-    SqliteDatabase, Model, fn, Query,
-    TextField, ForeignKeyField, DateTimeField, BooleanField
+    SqliteDatabase,
+    Model,
+    fn,
+    Query,
+    TextField,
+    ForeignKeyField,
+    DateTimeField,
+    BooleanField,
 )
 
 from config import DIR
 from third_party.shorten import shorten
 
 
-DB_FILE_NAME = DIR / 'database.sqlite'
-BACKUP_DIR_NAME = DIR / 'backup'
+DB_FILE_NAME = DIR / "database.sqlite"
+BACKUP_DIR_NAME = DIR / "backup"
 
 
 def db_create_backup(log: logging.Logger, backup_dir=BACKUP_DIR_NAME):
     backup_path = Path(backup_dir)
     backup_path.mkdir(parents=True, exist_ok=True)
 
-    file_name = str(DT.datetime.today().date()) + '.sqlite'
+    file_name = str(DT.datetime.today().date()) + ".sqlite"
     file_name = backup_path / file_name
 
-    log.debug(f'Doing create backup in: {file_name}')
+    log.debug(f"Doing create backup in: {file_name}")
     shutil.copy(DB_FILE_NAME, file_name)
 
 
 # Ensure foreign-key constraints are enforced.
-db = SqliteDatabase(DB_FILE_NAME, pragmas={'foreign_keys': 1})
+db = SqliteDatabase(DB_FILE_NAME, pragmas={"foreign_keys": 1})
 
 
 class BaseModel(Model):
@@ -55,13 +61,13 @@ class BaseModel(Model):
                     v = repr(shorten(v))
 
             elif isinstance(field, ForeignKeyField):
-                k = f'{k}_id'
+                k = f"{k}_id"
                 if v:
                     v = v.id
 
-            fields.append(f'{k}={v}')
+            fields.append(f"{k}={v}")
 
-        return self.__class__.__name__ + '(' + ', '.join(fields) + ')'
+        return self.__class__.__name__ + "(" + ", ".join(fields) + ")"
 
 
 class GistFile(BaseModel):
@@ -89,7 +95,7 @@ class Game(BaseModel):
     append_datetime = DateTimeField()
     finish_datetime = DateTimeField(null=True)
     ignored = BooleanField(default=False)
-    root_alias = ForeignKeyField('self', null=True)
+    root_alias = ForeignKeyField("self", null=True)
 
     class Meta:
         indexes = (
@@ -97,10 +103,10 @@ class Game(BaseModel):
         )
 
     @classmethod
-    def get_all_by(cls, **filters) -> list['Game']:
+    def get_all_by(cls, **filters) -> list["Game"]:
         return list(cls.select().filter(**filters).order_by(cls.id))
 
-    def get_first_root(self) -> 'Game':
+    def get_first_root(self) -> "Game":
         # Идем вверх пока не найдем самую первую игру
         root_alias = self.root_alias
         while root_alias:
@@ -143,7 +149,7 @@ class Game(BaseModel):
         return cls.select().where(cls.finish_datetime.is_null(False), cls.ignored == 0)
 
     @classmethod
-    def get_all_finished(cls, sort: bool = True) -> Iterator['Game']:
+    def get_all_finished(cls, sort: bool = True) -> Iterator["Game"]:
         query = cls.get_query_for_current_finished()
         items = list(query)
         if sort:
@@ -151,7 +157,7 @@ class Game(BaseModel):
         return items
 
     @classmethod
-    def get_all_finished_by_year(cls, year: int) -> Iterator['Game']:
+    def get_all_finished_by_year(cls, year: int) -> Iterator["Game"]:
         query = cls.get_query_for_current_finished()
         # Проще отсортировать тут, чем в базе из-за особенностей finish_datetime_dt
         items = [game for game in query if game.finish_datetime_dt.year == year]
@@ -160,14 +166,14 @@ class Game(BaseModel):
 
     @classmethod
     def get_year_by_number(cls) -> list[tuple[int, int]]:
-        fn_year = fn.strftime('%Y', cls.finish_datetime).cast('INTEGER')
+        fn_year = fn.strftime("%Y", cls.finish_datetime).cast("INTEGER")
 
         year_by_number = []
         for game in (
                 cls
                 .select(
-                    fn_year.alias('year'),
-                    fn.count(cls.id).alias('count')
+                    fn_year.alias("year"),
+                    fn.count(cls.id).alias("count")
                 )
                 .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
                 .group_by(fn_year)
@@ -180,11 +186,11 @@ class Game(BaseModel):
         return year_by_number
 
     @classmethod
-    def get_day_by_games(cls, year: int) -> dict[str, list['Game']]:
+    def get_day_by_games(cls, year: int) -> dict[str, list["Game"]]:
         day_by_games = defaultdict(list)
 
         for game in Game.get_all_finished_by_year(year):
-            day = game.finish_datetime_dt.strftime('%d/%m/%Y')
+            day = game.finish_datetime_dt.strftime("%d/%m/%Y")
             day_by_games[day].append(game)
 
         return day_by_games
@@ -228,7 +234,7 @@ db.connect()
 db.create_tables([GistFile, Game, Settings])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for year, number in Game.get_year_by_number():
         print(year, number)
 
@@ -236,9 +242,9 @@ if __name__ == '__main__':
 
     day_by_games = Game.get_day_by_games(2021)
     for day, games in list(day_by_games.items())[:3]:
-        print(f'{day} ({len(games)}):')
+        print(f"{day} ({len(games)}):")
         for game in games:
-            print(f'    {game.name} ({game.platform})')
+            print(f"    {game.name} ({game.platform})")
 
     print()
 
