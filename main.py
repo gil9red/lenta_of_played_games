@@ -8,7 +8,9 @@ from etc import fill_games, fill_gist_history, update_of_ignored
 
 from common import log
 from db import db_create_backup
-from third_party.wait import wait
+
+# pip install simple-wait
+from simple_wait import wait
 
 
 while True:
