@@ -1,23 +1,29 @@
 $(function() {
-    // Подгрузка данных с сервера при раскрытии
-    $(".collapse.multi-collapse").on('show.bs.collapse', function(e) {
-        let collapse_el = $(this);
-        let loaded_body_el = collapse_el.find('.not-loaded');
-        if (loaded_body_el.length == 0) {
-            return;
-        }
+    // Загрузка остальных годов
+    $(".card:has(.not-loaded)").each(function() {
+        let $card = $(this);
 
-        let year = collapse_el.data('year');
+        let $progress = $card.find(".progress");
+        $progress.removeClass('hide');
+
+        let $body = $card.find(".not-loaded");
+
+        let $collapse = $card.find(".collapse.multi-collapse");
+        let year = $card.find("[data-year]").data("year");
+
         $.get(
             '/year/' + year,
             function(data) {
-                loaded_body_el.html(data);
-                loaded_body_el.removeClass('not-loaded');
+                $body.html(data);
+                $body.removeClass('not-loaded');
+
+                // Установка обработчика копирования на игры
+                set_copy_handler('.media-body.game', $body);
 
                 // Применение поиска на только что подгруженные игры
-                search(true, collapse_el.attr('id'));
+                search(true, $collapse.attr('id'));
 
-                set_copy_handler('.media-body.game', collapse_el);
+                $progress.addClass('hide');
             }
         );
     });

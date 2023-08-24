@@ -58,16 +58,17 @@
                         </button>
                     </h5>
                 </div>
+                {% if loop.index > 1 %}
+                <div class="progress hide">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                {% endif %}
                 <div id="collapse_{{ year }}" class="collapse multi-collapse {{'show' if loop.index == 1 else ''}}" aria-labelledby="heading_{{ year }}" data-year="{{ year }}">
                     <div class="no_results hide text-center">Ничего не найдено</div>
                     <div class="card-body p-0 {{'not-loaded' if loop.index > 1 else ''}}">
                     {% if loop.index == 1 %}
                         {# day_by_games будет обработан шаблоном year_by_game.html #}
                         {% include 'year_by_game.html' %}
-                    {% else %}
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-                        </div>
                     {% endif %}
                     </div>
                 </div>
