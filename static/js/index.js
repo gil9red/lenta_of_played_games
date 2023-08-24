@@ -2,7 +2,7 @@ $(function() {
     // Подгрузка данных с сервера при раскрытии
     $(".collapse.multi-collapse").on('show.bs.collapse', function(e) {
         let collapse_el = $(this);
-        let loaded_body_el = collapse_el.find('.loaded-body');
+        let loaded_body_el = collapse_el.find('.not-loaded');
         if (loaded_body_el.length == 0) {
             return;
         }
@@ -12,7 +12,7 @@ $(function() {
             '/year/' + year,
             function(data) {
                 loaded_body_el.html(data);
-                loaded_body_el.removeClass('loaded-body');
+                loaded_body_el.removeClass('not-loaded');
 
                 // Применение поиска на только что подгруженные игры
                 search(true, collapse_el.attr('id'));
@@ -20,7 +20,24 @@ $(function() {
                 set_copy_handler('.media-body.game', collapse_el);
             }
         );
-    })
+    });
+
+    $('#clear_search').click(function() {
+        $('#search').val('');
+        search();
+    });
+
+    let typingTimer = null;       // Timer identifier
+    const doneTypingInterval = 300; // Time in ms
+
+    $('#search').on('input', function() {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(search, doneTypingInterval);
+    });
+
+    search(true);
+
+    set_copy_handler('.media-body.game');
 });
 
 function search(init=false, search_from_id=null) {
@@ -124,22 +141,3 @@ function set_copy_handler(css_selector, from_element=null) {
         });
     });
 }
-
-$(function() {
-    $('#clear_search').click(function() {
-        $('#search').val('');
-        search();
-    });
-
-    var typingTimer = null;       // Timer identifier
-    var doneTypingInterval = 300; // Time in ms
-
-    $('#search').on('input', function() {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(search, doneTypingInterval);
-    });
-
-    search(true);
-
-    set_copy_handler('.media-body.game');
-});
