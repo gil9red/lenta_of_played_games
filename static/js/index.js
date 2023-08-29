@@ -17,9 +17,6 @@ $(function() {
                 $body.html(data);
                 $body.removeClass('not-loaded');
 
-                // Установка обработчика копирования на игры
-                set_copy_handler('.media-body.game', $body);
-
                 // Применение поиска на только что подгруженные игры
                 search(true, $collapse.attr('id'));
 
@@ -43,7 +40,25 @@ $(function() {
 
     search(true);
 
-    set_copy_handler('.media-body.game');
+    // Copy text by double click
+    $(".card").on("dblclick", ".media-body.game", function() {
+        let text = $(this).find('.name').text();
+
+        // SOURCE: https://stackoverflow.com/a/48948114/5909792
+        $("<textarea/>")
+            .appendTo("body")
+            .val(text)
+            .select()
+            .each(() => document.execCommand('copy'))
+            .remove();
+
+        noty({
+            text: 'Скопировано в буфер обмена',
+            type: 'success',
+            layout: 'bottomCenter',
+            timeout: 2000,
+        });
+    });
 });
 
 function search(init=false, search_from_id=null) {
@@ -117,33 +132,5 @@ function search(init=false, search_from_id=null) {
         });
 
         collapse_el.find('.no_results').toggleClass('hide', !is_all_not_found);
-    });
-}
-
-function set_copy_handler(css_selector, from_element=null) {
-    if (from_element != null) {
-        from_element = from_element.find(css_selector);
-    } else {
-        from_element = $(css_selector);
-    }
-
-    // Copy text by double click
-    from_element.dblclick(function() {
-        let text = $(this).find('.name').text();
-
-        // SOURCE: https://stackoverflow.com/a/48948114/5909792
-        $("<textarea/>")
-            .appendTo("body")
-            .val(text)
-            .select()
-            .each(() => document.execCommand('copy'))
-            .remove();
-
-        noty({
-            text: 'Скопировано в буфер обмена',
-            type: 'success',
-            layout: 'bottomCenter',
-            timeout: 2000,
-        });
     });
 }
