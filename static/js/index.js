@@ -86,19 +86,19 @@ function search(init=false, search_from_id=null) {
     let day_by_games = new Map();
 
     $(query).each(function() {
-        let game_el = $(this);
-        let day_el = game_el.parent().parent()
-        let day_value = day_el.find('.day').text();
+        let $game = $(this);
+        let $day = $game.parent().parent()
+        let day_value = $day.find('.day').text();
 
-        let text = day_value + game_el.text().replace(/\s\s+/g, ' ').trim().toLowerCase();
+        let text = day_value + $game.text().replace(/\s\s+/g, ' ').trim().toLowerCase();
         let is_visible = text.includes(search_text);
-        game_el.toggleClass('not_found', !is_visible);
+        $game.toggleClass('not_found', !is_visible);
 
         // Если хоть одна игра видима, то показываем блок ее карточки
         // Иначе, если уже был поиск и ее карточка была скрыта, то при проверке
         // видимости игры она не будет показана, т.к. ее карточка скрыта
         if (is_visible) {
-            day_el.removeClass('not_found');
+            $day.removeClass('not_found');
         }
 
         let day_el_dom = day_el[0];
@@ -106,13 +106,13 @@ function search(init=false, search_from_id=null) {
             day_by_games.set(day_el_dom, []);
         }
 
-        day_by_games.get(day_el_dom).push(game_el);
+        day_by_games.get(day_el_dom).push($game);
     });
 
     for (let [day_el_dom, games] of day_by_games) {
         let number_visibles = 0;
-        for (let game_el of games) {
-            if (!game_el.hasClass("not_found")) {
+        for (let $game of games) {
+            if (!$game.hasClass("not_found")) {
                 number_visibles++;
             }
         }
@@ -120,10 +120,10 @@ function search(init=false, search_from_id=null) {
     }
 
     $('.collapse[data-year]').each(function() {
-        let collapse_el = $(this);
+        let $collapse = $(this);
         let is_all_not_found = true;
 
-        collapse_el.find('.card-body > .media').each(function() {
+        $collapse.find('.card-body > .media').each(function() {
             let day_el = $(this);
             if (!day_el.hasClass('not_found')) {
                 is_all_not_found = false;
@@ -131,6 +131,6 @@ function search(init=false, search_from_id=null) {
             }
         });
 
-        collapse_el.find('.no_results').toggleClass('hide', !is_all_not_found);
+        $collapse.find('.no_results').toggleClass('hide', !is_all_not_found);
     });
 }
