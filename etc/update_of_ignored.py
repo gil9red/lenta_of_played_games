@@ -21,12 +21,14 @@ log = get_logger("[Lenta of played games] update_of_ignored", DIR_LOG)
 
 def get_games() -> dict:
     rs = requests.get("https://gist.github.com/gil9red/2f80a34fb601cd685353")
+    rs.raise_for_status()
 
     root = BeautifulSoup(rs.content, "html.parser")
     href = root.select_one(".file-actions > a")["href"]
 
     raw_url = urljoin(rs.url, href)
     rs = requests.get(raw_url)
+    rs.raise_for_status()
 
     return parse_played_games(rs.text, silence=True)
 
@@ -36,6 +38,10 @@ def main():
         f"{platform}_{category}_{name}"
         for platform, category, name in iter_parse_played_games(get_games())
     ]
+
+    if not current_games:
+        log.warn("Что-то пошло не так - список игр пустой из гиста пустой")
+        return
 
     changed_count = 0
     for game in Game.select():
