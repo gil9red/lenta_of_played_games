@@ -113,5 +113,6 @@ logs/
 TOKEN.txt
 GITHUB_TOKEN.txt
 SMS_TOKEN.txt
+SECRET_KEY.txt
 database.sqlite
 users.json

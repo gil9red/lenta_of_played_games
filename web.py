@@ -10,7 +10,7 @@ from flask import Flask, render_template, send_from_directory, jsonify
 
 from flask_httpauth import HTTPDigestAuth
 
-from config import DIR_LOG, users
+from config import DIR_LOG, SECRET_KEY, users
 from common import get_logger
 from db import Game
 
@@ -18,7 +18,7 @@ from db import Game
 log = get_logger("web", DIR_LOG)
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '<SECRET_KEY_HERE>'
+app.config['SECRET_KEY'] = SECRET_KEY
 
 auth = HTTPDigestAuth()
 
