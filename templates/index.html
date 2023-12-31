@@ -11,14 +11,17 @@
     <script src="{{ url_for('static', filename='bootstrap-4.5.3/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-4.5.3/bootstrap.min.css') }}">
 
+    <script src="{{ url_for('static', filename='bootstrap-select-1.13.14/bootstrap-select.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-select-1.13.14/bootstrap-select.css') }}">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-dark.min_3.0.0.css') }}" />
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='glyphicon/glyphicon.css') }}">
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 
     <!-- noty -->
     <script src="static/js/jquery.noty.packaged.min.js"></script>
-
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body class="noselect">
@@ -41,11 +44,79 @@
             </div>
         </div>
     </nav>
+
+    <div id="modalFilters" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Фильтрация</h5>
+                    <button type="button"
+                            class="close glyphicon glyphicon-remove top-0"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="filter-by-platform-select">Выбор платформ:</label>
+                        <select
+                                id="filter-by-platform-select"
+                                class="selectpicker form-control"
+                                multiple
+                                title="<все платформы>"
+                                data-actions-box="true"
+                                data-select-all-text="Выбрать все"
+                                data-deselect-all-text="Убрать все"
+                        >
+                            {% for name in all_platforms %}
+                            <option value="{{ name }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filter-by-category-select">Выбор категорий:</label>
+                        <select
+                                id="filter-by-category-select"
+                                class="selectpicker form-control"
+                                title="<все категории>"
+                        >
+                            <option value="{{ finished_game }}">{{ finished_game_title }}</option>
+                            <option value="{{ finished_watched }}">{{ finished_watched_title }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button
+                                type="button"
+                                class="btn btn-warning form-control"
+                                onclick="$('.selectpicker').selectpicker('val', []);"
+                        >
+                            Очистить всё
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="search()">Принять</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="input-group mb-2">
             <input type="text" class="form-control" id="search" placeholder="Введите для поиска..." aria-describedby="basic-addon2">
             <div class="input-group-append">
-                <button class="btn btn-outline-danger" id="clear_search" type="button">Очистить</button>
+                <button
+                        id="button-filter"
+                        class="btn btn-primary top-0"
+                        type="button"
+                        data-dismiss="modal"
+                        data-toggle="modal" data-target="#modalFilters"
+                >
+                    <div class="icon glyphicon glyphicon-filter"></div>
+                    <div class="value" style="display: none;"></div>
+                </button>
+                <button class="btn btn-danger glyphicon glyphicon-remove" id="clear_search" type="button"></button>
             </div>
         </div>
 
@@ -53,11 +124,9 @@
             {% for year, number in year_by_number %}
             <div class="card">
                 <div class="card-header p-1" id="heading_{{ year }}">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link w-100 p-0" type="button" data-toggle="collapse" data-target="#collapse_{{ year }}" aria-expanded="true" aria-controls="collapse_{{ year }}">
-                            <h3 class="year">Год {{ year }} ({{ number }} игр)</h3>
-                        </button>
-                    </h5>
+                    <button class="btn btn-link w-100 p-0 mb-0" type="button" data-toggle="collapse" data-target="#collapse_{{ year }}" aria-expanded="true" aria-controls="collapse_{{ year }}">
+                        <h3 class="year">Год {{ year }} (<span class="filtered hide"><span class="number">-1</span> из </span><span>{{ number }}</span> игр)</h3>
+                    </button>
                 </div>
                 {% if loop.index > 1 %}
                 <div class="progress hide">
@@ -77,5 +146,6 @@
             {% endfor %}
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

@@ -3,13 +3,13 @@
     <div class="media-body">
         <h4 class="day">{{ day }}</h4>
         {% for game in games %}
-        <div class="media game p-1">
+        <div class="media game p-1" data-platform="{{ game.platform }}" data-category="{{ game.category }}">
             {% if game.category == 'FINISHED_GAME' %}
             <img src="{{ url_for('static', filename='img/video-game.png') }}" class="category" alt="video-game">
             {% elif game.category == 'FINISHED_WATCHED' %}
             <img src="{{ url_for('static', filename='img/television.png') }}" class="category" alt="television">
             {% endif %}
-            <div class="media-body game">
+            <div class="media-body">
                 <h5 class="mt-0 mb-0">
                     <div class="name d-inline-block">{{ game.name }}</div> (<div class="platform d-inline-block">{{ game.platform }}</div>)
                 </h5>

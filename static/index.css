@@ -18,6 +18,9 @@
 }
 img.category {
     margin-right: 0.5rem;
+
+    width: 32px;
+    height: 32px;
 }
 
 .navbar-toggler-icon {
@@ -25,11 +28,6 @@ img.category {
 }
 .not_found {
     display: none;
-}
-
-img.category {
-    width: 32px;
-    height: 32px;
 }
 
 .no_results {

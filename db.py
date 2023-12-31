@@ -195,6 +195,9 @@ class Game(BaseModel):
 
         return day_by_games
 
+    @classmethod
+    def get_platforms(cls) -> list[str]:
+        return sorted(set(game.platform for game in cls.get_query_for_current_finished()))
 
 class Settings(BaseModel):
     key = TextField(unique=True)
@@ -291,3 +294,6 @@ if __name__ == "__main__":
     #  * "15)   'Final Fantasy 9'  | PS  | 2015-06-22 22:40:22+05:00", root_alias=null
     print(Game.get_by_id(1468).finish_datetime_dt)
     print()
+
+    platforms = Game.get_platforms()
+    print(f"All platforms ({len(platforms)}): {platforms}")

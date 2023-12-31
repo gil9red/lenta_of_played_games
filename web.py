@@ -14,6 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from config import DIR_LOG, SECRET_KEY, users
 from common import get_logger
 from db import Game
+from third_party.mini_played_games_parser import FINISHED_GAME, FINISHED_WATCHED
 
 
 log = get_logger("web", DIR_LOG)
@@ -58,6 +59,14 @@ def index():
         title="Лента игр",
         year_by_number=year_by_number,
         day_by_games=Game.get_day_by_games(last_year),
+
+        finished_game=FINISHED_GAME,
+        finished_watched=FINISHED_WATCHED,
+
+        finished_game_title="🎮 Пройденные",
+        finished_watched_title="📺 Просмотренные",
+
+        all_platforms=Game.get_platforms(),
     )
 
 
