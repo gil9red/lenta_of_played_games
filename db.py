@@ -9,7 +9,7 @@ import logging
 import shutil
 
 from collections import defaultdict
-from typing import Any, Callable, Union, Optional, Iterator
+from typing import Any, Callable, Union, Optional
 from pathlib import Path
 
 # pip install peewee
@@ -149,7 +149,7 @@ class Game(BaseModel):
         return cls.select().where(cls.finish_datetime.is_null(False), cls.ignored == 0)
 
     @classmethod
-    def get_all_finished(cls, sort: bool = True) -> Iterator["Game"]:
+    def get_all_finished(cls, sort: bool = True) -> list["Game"]:
         query = cls.get_query_for_current_finished()
         items = list(query)
         if sort:
@@ -157,7 +157,7 @@ class Game(BaseModel):
         return items
 
     @classmethod
-    def get_all_finished_by_year(cls, year: int) -> Iterator["Game"]:
+    def get_all_finished_by_year(cls, year: int) -> list["Game"]:
         query = cls.get_query_for_current_finished()
         # Проще отсортировать тут, чем в базе из-за особенностей finish_datetime_dt
         items = [game for game in query if game.finish_datetime_dt.year == year]
