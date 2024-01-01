@@ -94,6 +94,7 @@ function search(init=false, search_from_id=null) {
         $(day_el_dom).toggleClass(not_found_class, number_visible == 0);
     }
 
+    let total_number_visible = 0;
     $('.collapse[data-year]').each(function() {
         let $collapse = $(this);
 
@@ -104,12 +105,18 @@ function search(init=false, search_from_id=null) {
                 number_visible++;
             }
         });
+        total_number_visible += number_visible;
+
         $collapse.find('.no_results').toggleClass('hide', number_visible > 0);
 
         let $year_filtered = $collapse.parent().find(".filtered");
         $year_filtered.toggleClass('hide', is_empty);
         $year_filtered.find(".number").text(number_visible);
     });
+
+    let $stats_found_game = $("#stats_found_game");
+    $stats_found_game.text(total_number_visible);
+    $stats_found_game.parent().toggleClass('hide', is_empty);
 }
 
 $(function() {

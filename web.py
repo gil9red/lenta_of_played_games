@@ -54,6 +54,10 @@ def index():
     year_by_number = Game.get_year_by_number()
     last_year = year_by_number[0][0]
 
+    games = Game.get_all_finished(sort=False)
+    total_finished_game = len([game for game in games if game.category == FINISHED_GAME])
+    total_finished_watched = len([game for game in games if game.category == FINISHED_WATCHED])
+
     return render_template(
         "index.html",
         title="Лента игр",
@@ -65,6 +69,9 @@ def index():
 
         finished_game_title="🎮 Пройденные",
         finished_watched_title="📺 Просмотренные",
+
+        total_finished_game=total_finished_game,
+        total_finished_watched=total_finished_watched,
 
         all_platforms=Game.get_platforms(),
     )

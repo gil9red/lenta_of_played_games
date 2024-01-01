@@ -41,6 +41,13 @@
                 <button class="btn btn-outline-info" type="button" onclick="$('.collapse.multi-collapse').collapse('hide'); $('#navbar_menu').collapse('hide')">
                     Свернуть всё
                 </button>
+                <table class="table">
+                    <tr><td>Всего:</td><td>{{ total_finished_game + total_finished_watched }}</td></tr>
+                    <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Пройдено:</td><td>{{ total_finished_game }}</td></tr>
+                    <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Просмотрено:</td><td>{{ total_finished_watched }}</td></tr>
+                    <tr><td>Платформ:</td><td>{{ all_platforms|length }}</td></tr>
+                    <tr class="hide"><td>Найдено игр:</td><td id="stats_found_game">-</td></tr>
+                </table>
             </div>
         </div>
     </nav>
