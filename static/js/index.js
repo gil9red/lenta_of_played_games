@@ -167,7 +167,7 @@ $(function() {
     search(true);
 
     // Copy text by double click
-    $(".card").on("dblclick", ".media-body.game", function() {
+    $(".card").on("dblclick", ".media.game > .media-body", function() {
         let text = $(this).find('.name').text();
 
         // SOURCE: https://stackoverflow.com/a/48948114/5909792
