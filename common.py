@@ -12,7 +12,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Iterator, Tuple, Optional, Callable, Any
 
-from config import DIR_LOG
+from config import DIR_LOGS
 
 
 def iter_parse_played_games(platforms: dict) -> Iterator[Tuple[str, str, str]]:
@@ -63,4 +63,4 @@ def get_logger(name: str, dir_name="logs"):
     return log
 
 
-log = get_logger("log", DIR_LOG)
+log = get_logger("log", DIR_LOGS)

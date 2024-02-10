@@ -12,7 +12,7 @@ from pathlib import Path
 
 DIR = Path(__file__).resolve().parent
 
-DIR_LOG = DIR / "logs"
+DIR_LOGS = DIR / "logs"
 
 GITHUB_TOKEN_FILE_NAME = DIR / "GITHUB_TOKEN.txt"
 GITHUB_TOKEN = (

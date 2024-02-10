@@ -11,13 +11,13 @@ from flask import Flask, render_template, send_from_directory, jsonify, session
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from config import DIR_LOG, SECRET_KEY, users
+from config import DIR_LOGS, SECRET_KEY, users
 from common import get_logger
 from db import Game
 from third_party.mini_played_games_parser import FINISHED_GAME, FINISHED_WATCHED
 
 
-log = get_logger("web", DIR_LOG)
+log = get_logger("web", DIR_LOGS)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
