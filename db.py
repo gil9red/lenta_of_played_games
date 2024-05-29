@@ -51,6 +51,10 @@ class BaseModel(Model):
     class Meta:
         database = db
 
+    @classmethod
+    def get_last(cls) -> "Self":
+        return cls.select().order_by(cls.id.desc()).first()
+
     def __str__(self):
         fields = []
         for k, field in self._meta.fields.items():

@@ -4,14 +4,9 @@
 __author__ = "ipetrash"
 
 
-from urllib.parse import urljoin
-
-import requests
-from bs4 import BeautifulSoup
-
 from config import DIR_LOGS
 from common import iter_parse_played_games, get_logger
-from db import Game
+from db import Game, GistFile
 from third_party.mini_played_games_parser import parse_played_games
 from third_party.add_notify_telegram import add_notify
 
@@ -20,17 +15,10 @@ log = get_logger("[Lenta of played games] update_of_ignored", DIR_LOGS)
 
 
 def get_games() -> dict:
-    rs = requests.get("https://gist.github.com/gil9red/2f80a34fb601cd685353")
-    rs.raise_for_status()
-
-    root = BeautifulSoup(rs.content, "html.parser")
-    href = root.select_one(".file-actions > a")["href"]
-
-    raw_url = urljoin(rs.url, href)
-    rs = requests.get(raw_url)
-    rs.raise_for_status()
-
-    return parse_played_games(rs.text, silence=True)
+    return parse_played_games(
+        GistFile.get_last().content,
+        silence=True,
+    )
 
 
 def main():
