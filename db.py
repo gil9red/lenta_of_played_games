@@ -80,6 +80,12 @@ class GistFile(BaseModel):
     raw_url = TextField()
     content = TextField()
 
+    @classmethod
+    def get_last(cls) -> "GistFile":
+        # NOTE: Какая-то проблема с гистами, что приводит к тому, что когда было сделано 2 коммита,
+        # последним коммитом оказался предпоследний
+        return cls.select().order_by(cls.committed_at.desc()).first()
+
     @property
     def committed_at_dt(self) -> Union[DT.datetime, DateTimeField]:
         if isinstance(self.committed_at, str):
@@ -202,6 +208,7 @@ class Game(BaseModel):
     @classmethod
     def get_platforms(cls) -> list[str]:
         return sorted(set(game.platform for game in cls.get_query_for_current_finished()))
+
 
 class Settings(BaseModel):
     key = TextField(unique=True)
