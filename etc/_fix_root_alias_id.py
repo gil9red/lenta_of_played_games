@@ -82,3 +82,23 @@ for root_game in Game.select():
         print(f"In game #{game.id} setted root_alias from #{root_game.id}")
         game.root_alias = root_game
         game.save()
+
+# Игры с DLC без заданного root_alias_id
+# Пример было "XXX", а стало "XXX (DLC)" но в root_alias_id не установлено значение из XXX
+postfix_dlc = " (DLC)"
+for game in Game.select().where(
+    Game.name.endswith(postfix_dlc),
+    Game.root_alias_id.is_null(),
+):
+    prev_game: Game | None = Game.get_or_none(
+        Game.name == game.name.removesuffix(postfix_dlc),
+        Game.platform == game.platform,
+        Game.category == game.category,
+        Game.ignored == True,
+    )
+    if not prev_game:
+        continue
+
+    print(f"In game #{game.id} setted root_alias from #{prev_game.id}")
+    game.root_alias = prev_game
+    game.save()
