@@ -117,14 +117,20 @@ class Game(BaseModel):
         return list(cls.select().filter(**filters).order_by(cls.id))
 
     def get_first_root(self) -> "Game":
+        root_alias: Game = self.root_alias
+        owns: list[Game] = [root_alias]
+
         # Идем вверх пока не найдем самую первую игру
-        root_alias = self.root_alias
         while root_alias:
             # Если у текущей игры нет псевдонима
             if not root_alias.root_alias:
                 break
 
-            root_alias = root_alias.root_alias
+            root_alias: Game = root_alias.root_alias
+            if root_alias in owns:
+                raise Exception(f"Обнаружено зацикливание {root_alias} в {owns}")
+
+            owns.append(root_alias)
 
         return root_alias
 
