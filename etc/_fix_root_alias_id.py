@@ -36,6 +36,7 @@ old_by_new_platforms = {
     "PS 2": "PS2",
     "PS 3": "PS3",
     "PS 4": "PS4",
+    "NES/Famicom": "Dendy/NES/Famicom",
     "Dendy/NES/Famicom": "NES",
 }
 for old_platform, new_platform in old_by_new_platforms.items():
