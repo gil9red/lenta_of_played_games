@@ -205,7 +205,7 @@ class Game(BaseModel):
     def get_day_by_games(cls, year: int) -> dict[str, list["Game"]]:
         day_by_games = defaultdict(list)
 
-        for game in Game.get_all_finished_by_year(year):
+        for game in cls.get_all_finished_by_year(year):
             day = game.finish_datetime_dt.strftime("%d/%m/%Y")
             day_by_games[day].append(game)
 
