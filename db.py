@@ -8,7 +8,7 @@ import datetime as DT
 import logging
 import shutil
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import Any, Callable, Union, Optional
 from pathlib import Path
 
@@ -16,7 +16,6 @@ from pathlib import Path
 from peewee import (
     SqliteDatabase,
     Model,
-    fn,
     Query,
     TextField,
     ForeignKeyField,
@@ -182,24 +181,17 @@ class Game(BaseModel):
 
     @classmethod
     def get_year_by_number(cls) -> list[tuple[int, int]]:
-        fn_year = fn.strftime("%Y", cls.finish_datetime).cast("INTEGER")
+        items: list[tuple[int, int]] = list(
+            Counter(
+                [
+                    g.finish_datetime_dt.year
+                    for g in cls.get_query_for_current_finished()
+                ]
+            ).most_common()
+        )
+        items.sort(key=lambda obj: obj[0], reverse=True)
 
-        year_by_number = []
-        for game in (
-                cls
-                .select(
-                    fn_year.alias("year"),
-                    fn.count(cls.id).alias("count")
-                )
-                .where(cls.finish_datetime.is_null(False), cls.ignored == 0)
-                .group_by(fn_year)
-                .order_by(fn_year.desc())
-        ):
-            year_by_number.append((
-                game.year, game.count
-            ))
-
-        return year_by_number
+        return items
 
     @classmethod
     def get_day_by_games(cls, year: int) -> dict[str, list["Game"]]:
@@ -213,7 +205,9 @@ class Game(BaseModel):
 
     @classmethod
     def get_platforms(cls) -> list[str]:
-        return sorted(set(game.platform for game in cls.get_query_for_current_finished()))
+        return sorted(
+            set(game.platform for game in cls.get_query_for_current_finished())
+        )
 
 
 class Settings(BaseModel):
