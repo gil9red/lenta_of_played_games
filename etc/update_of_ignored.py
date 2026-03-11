@@ -37,7 +37,7 @@ def main():
     ]
 
     if not current_games:
-        log.warn(f"Что-то пошло не так - список игр пустой из гиста пустой")
+        log.warn(f"Что-то пошло не так - список игр из гиста пустой")
         return
 
     changed_count = 0
